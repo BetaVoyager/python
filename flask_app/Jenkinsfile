@@ -16,7 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "ls && docker build -t $IMAGE_NAME:$TAG ."
+                    sh "ls && docker build -t $IMAGE_NAME:$TAG flask_app"
                 }
             }
         }
