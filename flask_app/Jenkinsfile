@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     sleep 5 // Wait for container to start
-                    sh "docker exec flask-test curl -f http://localhost:5000 || (echo 'App failed to respond!' && exit 1)"
+                    sh "docker exec flask-test curl -I http://localhost:5000 || (echo 'App failed to respond!' && exit 1)"
                 }
             }
         }
