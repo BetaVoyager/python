@@ -1,12 +1,50 @@
-Jenkinsfile (Declarative Pipeline)
-/* Requires the Docker Pipeline plugin */
 pipeline {
-    agent { docker { image 'python:3.13.5-alpine3.22' } }
+    agent any
+
+    environment {
+        IMAGE_NAME = "flask-app" // Change this to your DockerHub username/repo
+        TAG = "latest"
+    }
+
     stages {
-        stage('build') {
+        stage('Checkout') {
             steps {
-                sh 'python --version'
+                git url: 'https://github.com/BetaVoyager/python.git', branch: 'main'
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t $IMAGE_NAME:$TAG ."
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                script {
+                    // Stop if already running
+                    sh "docker rm -f flask-test || true"
+                    sh "docker run -d --name flask-test -p 5000:5000 $IMAGE_NAME:$TAG"
+                }
+            }
+        }
+
+        stage('Test App') {
+            steps {
+                script {
+                    sleep 5 // Wait for container to start
+                    sh "curl -I http://localhost:5000 || (echo 'App failed to respond!' && exit 1)"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up..."
+            sh "docker rm -f flask-test || true"
         }
     }
 }
