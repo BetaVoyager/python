@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = 'supersecret'  # Needed for sessions and CSRF
@@ -67,4 +68,5 @@ def delete(name_id):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
